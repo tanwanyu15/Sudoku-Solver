@@ -14,9 +14,17 @@ class Cell:
         self.possibilities = [1] * 9
         self.value = 0
 
-    def check_certainty(self) -> bool:
-        """位运算法检查方块值的确定性"""
-        return sum(self.possibilities) == 1
+    def check_certainty(self) -> int:
+        """检查方块值的确定性。若确定，则返回方块的值"""
+        value = 0
+        for v in range(9):
+            if self.possibilities[v]:
+                if value:
+                    return 0
+                else:
+                    value = v + 1
+        return value
+
 
     def clear(self) -> None:
         """重置方块的取值"""
@@ -114,8 +122,9 @@ class Solver:
                 for c in range(9):
                     if self.board[r][c].value:
                         continue
-                    if self.board[r][c].check_certainty():
-                        self.set_value(r, c, self.board[r][c].possibilities.index(1) + 1)
+                    value = self.board[r][c].check_certainty()
+                    if value:
+                        self.set_value(r, c, value)
                         flag_change = True
             # 根据每个行、列、宫中数字的唯一性进行取值
             p_r = [[[] for _ in range(9)] for _ in range(9)]
